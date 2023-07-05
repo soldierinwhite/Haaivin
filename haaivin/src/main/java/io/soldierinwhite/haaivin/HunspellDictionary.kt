@@ -19,7 +19,7 @@ class HunspellDictionary(
             Charset.forName(it.readLine())
         }
     ).use { reader ->
-        reader.readLines().mapNotNull { line ->
+        reader.readLines().filter { it.any { char -> char.isDigit() } }.mapNotNull { line ->
             if (line.none { it.isUpperCase() }) {
                 val firstDigitIndex = line.indexOfFirst { it.isDigit() }
                 line.substring(firstDigitIndex).windowed(2, 1)

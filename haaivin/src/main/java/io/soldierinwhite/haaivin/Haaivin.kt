@@ -9,6 +9,7 @@ class Haaivin(
     cacheItemSize: Int = 1000
 ) {
     private val lruCache = LruCache<String, String>(cacheItemSize)
+
     //https://github.com/hunspell/hyphen/blob/master/README.hyphen
     fun hyphenate(string: String, hyphen: Char = Char(173), dictionaryId: String): String {
         if (hunspellDictionaries.isEmpty()) return string
