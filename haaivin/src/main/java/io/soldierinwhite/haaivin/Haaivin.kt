@@ -1,11 +1,14 @@
 package io.soldierinwhite.haaivin
 
+import androidx.collection.LruCache
 import kotlin.math.max
 import kotlin.math.min
 
 class Haaivin(
-    private val hunspellDictionaries: List<HunspellDictionary>
+    private val hunspellDictionaries: List<HunspellDictionary>,
+    cacheItemSize: Int = 1000
 ) {
+    private val lruCache = LruCache<String, String>(cacheItemSize)
     //https://github.com/hunspell/hyphen/blob/master/README.hyphen
     fun hyphenate(string: String, hyphen: Char = Char(173), dictionaryId: String): String {
         if (hunspellDictionaries.isEmpty()) return string
@@ -14,6 +17,7 @@ class Haaivin(
             hunspellDictionaries.find { it.id == dictionaryId } ?: hunspellDictionaries.first()
         val words = string.split(Regex("\\s")).filter { it.isNotEmpty() }
         val hyphenatedWords = words.map { word ->
+            lruCache[word]?.let { return@map it }
             val prepWord = ".${word.lowercase()}."
             val scoreArray = IntArray(prepWord.length + 1)
             prepWord.indices.forEach { startIndex ->
@@ -39,7 +43,7 @@ class Haaivin(
                 } else {
                     "$char$hyphen"
                 }
-            }.joinToString("")
+            }.joinToString("").also { lruCache.put(word, it) }
         }
         val spaces = string.split(Regex("\\S")).filter { it.isNotEmpty() }
         return (((spaces.size - hyphenatedWords.size).takeIf { it > 0 }
