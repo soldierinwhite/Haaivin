@@ -38,7 +38,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'io.github.soldierinwhite'
                 artifactId = 'haaivin'
-                version = '1.0'
+                version = '1.1'
             }
         }
     }
