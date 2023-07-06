@@ -1,5 +1,5 @@
 # Haaivin
-A hyphenation library in Kotlin for Android. 
+A hyphenation library in Kotlin for Android. 'Haaivin' is the Afrikaans word for 'sharkfin' and is pronounced "hyphen". Since hyphenation in Android is pretty much covered for apps designed with single language experiences, but this library targets apps that display multiple languages per session or even screen, it seemed appropriate choosing a multilingual name.
 
 ## Background
 Android does not do hyphenation by default (starting with Android Q). Usually that means wrapping all of the word to the next line. 
@@ -41,4 +41,26 @@ implementation 'com.github.soldierinwhite:Haaivin:<version>'
 
 ## Add the relevant Hunspell hyphenation dictionary
 Hyphenation dictionaries define the patterns relevant to hyphenation for each language. The dictionaries and algorithm used by this project is tested on the [dictionaries](https://github.com/LibreOffice/dictionaries/tree/master) that are available by different open source licenses
-from the LibreOffice project.
+from the LibreOffice project. You can add the '.dic' file into your app assets folder for easy access as in the example app.
+
+## Initialize Haaivin
+In the launcher activity, application override or dependency injection module, initialize Haaivin in the following way:
+```
+Haaivin(listOf(
+  HunspellDictionary("<user defined id for dictionary>") { /* Fetch the '.dic' file and return an InputStream */ },
+  ...
+))
+```
+If you are setting up Haaivin from an Android component and have place the dictionary in your assets, you can call ```assets.open("nameOfDictionary.dic")``` or pass context to your 
+dependency injection providing function and call ```context.assets.open("nameOfDictionary.dic")````
+
+## Hyphenate
+To hyphenate any String, whether a word or a paragraph, call ```haaivin.hyphenate(string = stringToBeHyphenated, dictionaryId = idForDictionaryInApplicableLanguage)```. By default the hyphenation
+character is the soft hyphen which will only be visible when text is wrapped, but you can choose your own character if you want to put another character in the hyphenation indices.
+
+Add the returned text to your components, but remember to also set ```hyphens = Hyphens.Auto```as the default in the relevant Typography text-styles for compose or ```android:hyphenationFrequency=normal|full```in XML.
+
+## Contributors
+This is a very fast and shabby first try, only tested with Swedish and English hyphenation dictionaries currently, so please add issues or pull requests to help fix any inevitable issues. Performance is also not optimised in v1.0, so feel free to improve the algorithm.
+
+
